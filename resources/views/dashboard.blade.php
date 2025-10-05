@@ -14,7 +14,7 @@
         <div class="text-green-600 text-4xl mb-3">🥦</div>
         <h3 class="text-lg font-semibold mb-2 text-green-700">Productos</h3>
         <p class="text-gray-600 mb-4">Agrega o actualiza los productos disponibles.</p>
-        <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
+        <a href="{{ route('productos.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
     </div>
 
     {{-- Compras --}}
@@ -22,7 +22,7 @@
         <div class="text-green-600 text-4xl mb-3">🧾</div>
         <h3 class="text-lg font-semibold mb-2 text-green-700">Compras</h3>
         <p class="text-gray-600 mb-4">Registra las compras realizadas a proveedores.</p>
-        <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
+        <a href="{{ route('compras.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
     </div>
 
     {{-- Ventas --}}
@@ -30,7 +30,7 @@
         <div class="text-green-600 text-4xl mb-3">💰</div>
         <h3 class="text-lg font-semibold mb-2 text-green-700">Ventas</h3>
         <p class="text-gray-600 mb-4">Consulta y gestiona las ventas del fruver.</p>
-        <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
+        <a href="{{ route('ventas.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Ir</a>
     </div>
 </div>
 @endsection

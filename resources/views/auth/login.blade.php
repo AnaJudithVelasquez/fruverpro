@@ -43,5 +43,16 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
+        <!-- 🔹 Enlace para registrarse -->
+        <div class="flex items-center justify-center mt-6">
+            <p class="text-sm text-gray-600">
+                ¿No tienes una cuenta?
+                <a href="{{ route('register') }}" 
+                   class="text-green-600 hover:text-green-800 font-semibold">
+                   Regístrate aquí
+                </a>
+            </p>
+        </div>
     </form>
 </x-guest-layout>

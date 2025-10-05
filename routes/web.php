@@ -36,7 +36,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 🥬 Módulo de Productos
+    // 🥬 Módulo de Productos
+Route::middleware(['auth'])->group(function () {
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/create', [ProductoController::class, 'create'])->name('productos.create');
+    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
+    Route::get('/productos/{producto}/edit', [ProductoController::class, 'edit'])->name('productos.edit');
+    Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
+    Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+
+    // Ruta para generar PDF
+
+Route::get('/productos/pdf', [ProductoController::class, 'generarPDF'])->name('productos.pdf');
+
+});
 
     // 🧾 Módulo de Compras
     Route::get('/compras', [CompraController::class, 'index'])->name('compras.index');
