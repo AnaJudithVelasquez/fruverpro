@@ -31,42 +31,53 @@ class VentaController extends Controller
      * Guardar nueva venta
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'fecha' => 'required|date',
-            'cliente' => 'required|string|max:255',
-            'productos' => 'required|array|min:1',
-        ]);
+{
+    $request->validate([
+        'fecha' => 'required|date',
+        'cliente' => 'required|string|max:255',
+        'productos' => 'required|array|min:1',
+    ]);
 
-        $venta = Venta::create([
-            'fecha' => $request->fecha,
-            'cliente' => $request->cliente,
-            'total_venta' => 0,
-        ]);
+    $venta = Venta::create([
+        'fecha' => $request->fecha,
+        'cliente' => $request->cliente,
+        'total_venta' => 0,
+    ]);
 
-        $total = 0;
+    $total = 0;
 
-        foreach ($request->productos as $item) {
-            if (isset($item['producto_id']) && $item['cantidad'] > 0) {
-                $producto = Producto::find($item['producto_id']);
-                if ($producto) {
-                    $subtotal = $producto->precio * $item['cantidad'];
+    foreach ($request->productos as $item) {
+        if (isset($item['producto_id']) && $item['cantidad'] > 0) {
+            $producto = Producto::find($item['producto_id']);
+            if ($producto) {
 
-                    $venta->productos()->attach($producto->id, [
-                        'cantidad' => $item['cantidad'],
-                        'precio_unitario' => $producto->precio,
-                        'subtotal' => $subtotal
-                    ]);
-
-                    $total += $subtotal;
+                // ✅ Validar stock suficiente
+                if ($producto->stock < $item['cantidad']) {
+                    return redirect()->back()->withErrors("No hay suficiente stock de {$producto->nombre}");
                 }
+
+                $subtotal = $producto->precio * $item['cantidad'];
+
+                // Restar stock
+                $producto->stock -= $item['cantidad'];
+                $producto->save();
+
+                $venta->productos()->attach($producto->id, [
+                    'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $producto->precio,
+                    'subtotal' => $subtotal
+                ]);
+
+                $total += $subtotal;
             }
         }
-
-        $venta->update(['total_venta' => $total]);
-
-        return redirect()->route('ventas.index')->with('success', 'Venta registrada correctamente.');
     }
+
+    $venta->update(['total_venta' => $total]);
+
+    return redirect()->route('ventas.index')->with('success', 'Venta registrada correctamente.');
+}
+
 
     /**
      * Mostrar detalles de una venta
@@ -90,45 +101,67 @@ class VentaController extends Controller
     /**
      * Actualizar venta
      */
-    public function update(Request $request, Venta $venta)
-    {
-        $request->validate([
-            'fecha' => 'required|date',
-            'cliente' => 'required|string|max:255',
-            'productos' => 'required|array|min:1',
-        ]);
+   public function update(Request $request, Venta $venta)
+{
+    $request->validate([
+        'fecha' => 'required|date',
+        'cliente' => 'required|string|max:255',
+        'productos' => 'required|array|min:1',
+    ]);
 
-        $venta->update([
-            'fecha' => $request->fecha,
-            'cliente' => $request->cliente,
-            'total_venta' => 0,
-        ]);
+    // 1️⃣ Devolver el stock anterior
+    foreach ($venta->productos as $vp) {
+        $producto = Producto::find($vp->id);
+        if ($producto) {
+            $producto->stock += $vp->pivot->cantidad;
+            $producto->save();
+        }
+    }
 
-        $venta->productos()->detach();
+    // 2️⃣ Actualizar datos de la venta
+    $venta->update([
+        'fecha' => $request->fecha,
+        'cliente' => $request->cliente,
+        'total_venta' => 0,
+    ]);
 
-        $total = 0;
+    $venta->productos()->detach();
 
-        foreach ($request->productos as $item) {
-            if (isset($item['producto_id']) && $item['cantidad'] > 0) {
-                $producto = Producto::find($item['producto_id']);
-                if ($producto) {
-                    $subtotal = $producto->precio * $item['cantidad'];
+    $total = 0;
 
-                    $venta->productos()->attach($producto->id, [
-                        'cantidad' => $item['cantidad'],
-                        'precio_unitario' => $producto->precio,
-                        'subtotal' => $subtotal
-                    ]);
+    // 3️⃣ Aplicar nueva venta y descontar stock
+    foreach ($request->productos as $item) {
+        if (isset($item['producto_id']) && $item['cantidad'] > 0) {
+            $producto = Producto::find($item['producto_id']);
+            if ($producto) {
 
-                    $total += $subtotal;
+                // ✅ Validar stock suficiente
+                if ($producto->stock < $item['cantidad']) {
+                    return redirect()->back()->withErrors("No hay suficiente stock de {$producto->nombre}");
                 }
+
+                $subtotal = $producto->precio * $item['cantidad'];
+
+                // Descontar stock
+                $producto->stock -= $item['cantidad'];
+                $producto->save();
+
+                $venta->productos()->attach($producto->id, [
+                    'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $producto->precio,
+                    'subtotal' => $subtotal
+                ]);
+
+                $total += $subtotal;
             }
         }
-
-        $venta->update(['total_venta' => $total]);
-
-        return redirect()->route('ventas.index')->with('success', 'Venta actualizada correctamente.');
     }
+
+    $venta->update(['total_venta' => $total]);
+
+    return redirect()->route('ventas.index')->with('success', 'Venta actualizada correctamente.');
+}
+
 
     /**
      * Eliminar venta
