@@ -61,13 +61,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/compras/{compra}', [CompraController::class, 'destroy'])->name('compras.destroy');
     Route::get('/compras/pdf', [CompraController::class, 'generarPDF'])->name('compras.pdf');
 
+    
     /*
-    |--------------------------------------------------------------------------
-    | 💰 MÓDULO DE VENTAS
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
-
+|--------------------------------------------------------------------------
+| 💰 MÓDULO DE VENTAS
+|--------------------------------------------------------------------------
+*/
+Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
+Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+Route::get('/ventas/{venta}', [VentaController::class, 'show'])->name('ventas.show');
+Route::get('/ventas/{venta}/edit', [VentaController::class, 'edit'])->name('ventas.edit');
+Route::put('/ventas/{venta}', [VentaController::class, 'update'])->name('ventas.update');
+Route::delete('/ventas/{venta}', [VentaController::class, 'destroy'])->name('ventas.destroy');
+Route::get('/ventas/{venta}/pdf', [VentaController::class, 'generarPDF'])->name('ventas.pdf');
     /*
     |--------------------------------------------------------------------------
     | 🚪 CERRAR SESIÓN MANUAL
