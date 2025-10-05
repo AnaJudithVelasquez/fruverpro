@@ -35,29 +35,44 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // 🥬 Módulo de Productos
-    // 🥬 Módulo de Productos
-Route::middleware(['auth'])->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | 🥬 MÓDULO DE PRODUCTOS
+    |--------------------------------------------------------------------------
+    */
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/create', [ProductoController::class, 'create'])->name('productos.create');
     Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
     Route::get('/productos/{producto}/edit', [ProductoController::class, 'edit'])->name('productos.edit');
     Route::put('/productos/{producto}', [ProductoController::class, 'update'])->name('productos.update');
     Route::delete('/productos/{producto}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+    Route::get('/productos/pdf', [ProductoController::class, 'generarPDF'])->name('productos.pdf');
 
-    // Ruta para generar PDF
-
-Route::get('/productos/pdf', [ProductoController::class, 'generarPDF'])->name('productos.pdf');
-
-});
-
-    // 🧾 Módulo de Compras
+    /*
+    |--------------------------------------------------------------------------
+    | 🧾 MÓDULO DE COMPRAS
+    |--------------------------------------------------------------------------
+    */
     Route::get('/compras', [CompraController::class, 'index'])->name('compras.index');
+    Route::get('/compras/create', [CompraController::class, 'create'])->name('compras.create');
+    Route::post('/compras', [CompraController::class, 'store'])->name('compras.store');
+    Route::get('/compras/{compra}/edit', [CompraController::class, 'edit'])->name('compras.edit');
+    Route::put('/compras/{compra}', [CompraController::class, 'update'])->name('compras.update');
+    Route::delete('/compras/{compra}', [CompraController::class, 'destroy'])->name('compras.destroy');
+    Route::get('/compras/pdf', [CompraController::class, 'generarPDF'])->name('compras.pdf');
 
-    // 💰 Módulo de Ventas
+    /*
+    |--------------------------------------------------------------------------
+    | 💰 MÓDULO DE VENTAS
+    |--------------------------------------------------------------------------
+    */
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
 
-    // 🚪 Cerrar sesión manualmente
+    /*
+    |--------------------------------------------------------------------------
+    | 🚪 CERRAR SESIÓN MANUAL
+    |--------------------------------------------------------------------------
+    */
     Route::post('/logout', function () {
         Auth::logout();
         return redirect('/');
@@ -66,4 +81,3 @@ Route::get('/productos/pdf', [ProductoController::class, 'generarPDF'])->name('p
 
 // ⚙️ Rutas de autenticación generadas por Breeze
 require __DIR__.'/auth.php';
-
